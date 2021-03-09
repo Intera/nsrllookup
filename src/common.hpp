@@ -28,6 +28,10 @@ std::vector<std::string> query_server(const std::vector<std::string>&);
 extern std::string SERVER, PORT;
 extern bool SCORE_HITS;
 
+// intera edit
+extern bool SHA1;
+extern bool SHA256;
+
 #ifdef WINDOWS
 
 #endif

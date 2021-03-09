@@ -37,7 +37,8 @@ void parse_options(int argc, char** argv)
 {
     const regex valid_port{ "^[0-9]{1,5}$" };
     options_description options { "nsrllookup options" };
-	
+
+    // intera edit, add two options
     options.add_options()("help,h", "Show this help screen")(
         "version,v", "Show version information")(
         "bug-reports,b", "Show bug reporting information")(
@@ -45,7 +46,9 @@ void parse_options(int argc, char** argv)
         "Show only RDS misses (default)")(
         "server,s", value<string>()->default_value("nsrllookup.com"),
         "nsrlsvr instance to use")(
-        "port,p", value<string>()->default_value("9120"), "port to connect on");
+        "port,p", value<string>()->default_value("9120"), "port to connect on")(
+        "sha1", "query sha1 hashes")(
+        "sha256", "query sha256 hashes");
     variables_map vm;
 
     try {
@@ -73,10 +76,18 @@ void parse_options(int argc, char** argv)
         cout << "Error: the known and unknown flags are mutually exclusive.\n";
         bomb(-1);
     }
-	
+
     SCORE_HITS = static_cast<bool>(vm.count("known"));
     SERVER = vm["server"].as<string>();
     PORT = vm["port"].as<string>();
+
+    // intera edit
+    if (vm.count("sha1") && vm.count("sha256")) {
+        cout << "Error: the sha1 and sha256 flags are mutually exclusive.\n";
+        bomb(-1);
+    }
+    SHA1 = static_cast<bool>(vm.count("sha1"));
+    SHA256 = static_cast<bool>(vm.count("sha256"));
 
     if (!regex_search(PORT, valid_port)) {
         cerr << "Error: '" << PORT << "' is not a valid port.\n";

@@ -38,7 +38,11 @@ using std::regex;
 string SERVER, PORT;
 bool SCORE_HITS { false };
 
-int main(int argc, char* argv[])
+// intera edit
+bool SHA1 { false };
+bool SHA256 { false };
+
+int main_orig(int argc, char* argv[])
 {
 #if WINDOWS | WIN32
     WSAData wsad;
@@ -52,7 +56,7 @@ int main(int argc, char* argv[])
     vector<string> hashes;
     const regex valid_line{ "^[A-F0-9]{32}",
 		std::regex_constants::icase | std::regex_constants::optimize };
-	
+
     parse_options(argc, argv);
 
     string line;
@@ -66,6 +70,59 @@ int main(int argc, char* argv[])
 
     sort(hashes.begin(), hashes.end());
     hashes.erase(unique(hashes.begin(), hashes.end()), hashes.end());
+
+    auto answers = query_server(hashes);
+    copy(answers.cbegin(), answers.cend(), ostream_iterator<string>(cout, "\n"));
+#if WINDOWS | WIN32
+    WSACleanup();
+#endif
+    return EXIT_SUCCESS;
+}
+
+// intera edit
+int main(int argc, char* argv[])
+{
+#if WINDOWS | WIN32
+    WSAData wsad;
+    if (0 != WSAStartup(MAKEWORD(2, 0), &wsad)) {
+        std::cerr << "Error: could not initialize Winsock.\n\n"
+                     "You're running a very old version of Windows.  nsrllookup "
+                     "won't work\non this system.\n";
+        bomb(-1);
+    }
+#endif
+    vector<string> hashes;
+    int length;
+    regex valid_line;
+    const regex valid_line_md5{ "^[A-F0-9]{32}",
+      std::regex_constants::icase | std::regex_constants::optimize };
+    const regex valid_line_sha1{ "^[A-F0-9]{40}",
+      std::regex_constants::icase | std::regex_constants::optimize };
+    const regex valid_line_sha256{ "^[A-F0-9]{64}",
+      std::regex_constants::icase | std::regex_constants::optimize };
+
+    if (SHA1) {
+      valid_line = valid_line_sha1;
+      length = 40;
+    }
+    else if (SHA256) {
+      valid_line = valid_line_sha256;
+      length = 64;
+    }
+    else {
+      valid_line = valid_line_md5;
+      length = 32;
+    }
+    parse_options(argc, argv);
+
+    string line;
+    while (cin) {
+        getline(cin, line);
+        transform(line.begin(), line.end(), line.begin(), ::toupper);
+        if (regex_search(line, valid_line)) {
+            hashes.emplace_back(string(line.begin(), line.begin() + length));
+        }
+    }
 
     auto answers = query_server(hashes);
     copy(answers.cbegin(), answers.cend(), ostream_iterator<string>(cout, "\n"));
