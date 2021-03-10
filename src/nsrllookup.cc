@@ -94,13 +94,10 @@ int main(int argc, char* argv[])
     vector<string> hashes;
     int length;
     regex valid_line;
-    const regex valid_line_md5{ "^[A-F0-9]{32}",
-      std::regex_constants::icase | std::regex_constants::optimize };
-    const regex valid_line_sha1{ "^[A-F0-9]{40}",
-      std::regex_constants::icase | std::regex_constants::optimize };
-    const regex valid_line_sha256{ "^[A-F0-9]{64}",
-      std::regex_constants::icase | std::regex_constants::optimize };
-
+    parse_options(argc, argv);
+    const regex valid_line_md5{"^[A-F0-9]{32}$", std::regex_constants::optimize};
+    const regex valid_line_sha1{"^[A-F0-9]{40}$", std::regex_constants::optimize};
+    const regex valid_line_sha256{"^[A-F0-9]{64}$", std::regex_constants::optimize};
     if (SHA1) {
       valid_line = valid_line_sha1;
       length = 40;
@@ -113,17 +110,14 @@ int main(int argc, char* argv[])
       valid_line = valid_line_md5;
       length = 32;
     }
-    parse_options(argc, argv);
-
     string line;
     while (cin) {
         getline(cin, line);
+        if (length > line.size()) continue;
+        if (line[line.size() - 1] == '\r') line.erase(line.size() - 1);
         transform(line.begin(), line.end(), line.begin(), ::toupper);
-        if (regex_search(line, valid_line)) {
-            hashes.emplace_back(string(line.begin(), line.begin() + length));
-        }
+        if (regex_match(line, valid_line)) hashes.emplace_back(line);
     }
-
     auto answers = query_server(hashes);
     copy(answers.cbegin(), answers.cend(), ostream_iterator<string>(cout, "\n"));
 #if WINDOWS | WIN32

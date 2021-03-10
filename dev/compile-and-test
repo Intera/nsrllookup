@@ -1,0 +1,15 @@
+#!/bin/sh -e
+# usage: ./dev/compile-and-test
+
+query() {
+  echo
+  echo $1
+  cat dev/test-data/$1 | ./nsrllookup --server localhost $2
+  echo known
+  cat dev/test-data/$1 | ./nsrllookup --server localhost --known $2
+}
+
+make
+query test.md5
+query test.sha1 --sha1
+query test.sha256 --sha256

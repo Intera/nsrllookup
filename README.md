@@ -1,3 +1,10 @@
+# fork of nsrllookup
+modifications to the original nsrllookup:
+* support additional hash formats sha1 and sha256
+* select hash format to use with new options "--sha1" or "--sha256"
+
+depends on a modified [nsrlsvr](https://github.com/Intera/nsrlsvr/tree/sha1-sha256-support).
+
 # nsrllookup
 
 ## What is it?

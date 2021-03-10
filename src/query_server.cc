@@ -88,7 +88,6 @@ vector<string> query_server(const vector<string>& hashes)
             // intera edit
             if (SHA1) buf << "sha1 ";
             if (SHA256) buf << "sha256 ";
-
             copy(hashes.cbegin() + hashidx, hashes.cbegin() + end, bufiter);
             auto query = buf.str();
             trim(query);
