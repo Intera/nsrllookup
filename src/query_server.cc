@@ -91,11 +91,15 @@ vector<string> query_server(const vector<string>& hashes)
             copy(hashes.cbegin() + hashidx, hashes.cbegin() + end, bufiter);
             auto query = buf.str();
             trim(query);
+
+            std::cout << "query " << query << "\n";
+
             stream << query << "\r\n";
 
             // Receive and walk down the response.
             getline(stream, response);
             trim(response);
+            std::cout << "response " << response << "\n";
             if (!regex_search(response, resprx)) {
                 cerr << "Error: malformed response from server";
                 bomb(-1);

@@ -10,6 +10,7 @@ query() {
 }
 
 make
+query issue.sha256
 query test.md5
 query test.sha1 --sha1
 query test.sha256 --sha256
