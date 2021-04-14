@@ -48,7 +48,8 @@ void parse_options(int argc, char** argv)
         "nsrlsvr instance to use")(
         "port,p", value<string>()->default_value("9120"), "port to connect on")(
         "sha1", "query sha1 hashes")(
-        "sha256", "query sha256 hashes");
+        "sha256", "query sha256 hashes")(
+        "md5", "query md5 hashes");
     variables_map vm;
 
     try {
